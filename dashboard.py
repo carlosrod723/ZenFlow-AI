@@ -37,18 +37,15 @@ data = get_cloudwatch_metrics(metric_name, namespace)
 df = pd.DataFrame(data)
 
 # Debugging: Check the DataFrame columns
-st.write("Columns in DataFrame:", df.columns)
+st.write("DataFrame columns:", df.columns)
 
-# Sort DataFrame by the correct timestamp column
-timestamp_column = "Timestamp"  # Modify this if the column name is different
-if timestamp_column in df.columns:
-    df = df.sort_values(by=timestamp_column)
+# Sort by available column (Timestamp or any other if Timestamp is not present)
+if 'Timestamp' in df.columns:
+    df = df.sort_values(by='Timestamp')
+    st.line_chart(df[['Timestamp', 'Average']].set_index('Timestamp'))
 else:
-    st.write(f"Column '{timestamp_column}' not found in the DataFrame. Please check the column names.")
+    st.write("Timestamp column not found. Displaying raw data instead.")
 
-# Display the metrics in a line chart
-if 'Average' in df.columns:
-    st.line_chart(df[['Average']])
-
+# Display the metrics in a line chart or raw data if Timestamp is missing
 st.write('Metrics data:')
 st.write(df)
