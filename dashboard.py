@@ -44,10 +44,6 @@ st.write(df.columns)
 st.write("DataFrame content:")
 st.write(df)
 
-# If Timestamp exists, sort by it; otherwise, display raw data
-if 'Timestamp' in df.columns:
-    df = df.sort_values(by='Timestamp')
-    st.line_chart(df[['Timestamp', 'Average']].set_index('Timestamp'))
-else:
-    st.write("Timestamp column is missing from the data. Displaying raw data.")
-    st.write(df)
+# Display the data without assuming any specific columns
+st.write("Displaying raw data in a table:")
+st.table(df)
