@@ -1,0 +1,6 @@
+zenml==0.21.1
+boto3==1.28.17
+streamlit==1.30.0
+torch==2.0.1
+transformers==4.30.2
+datasets==2.13.1
