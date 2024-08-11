@@ -39,12 +39,12 @@ df = pd.DataFrame(data)
 # Debugging: Check the DataFrame columns
 st.write("Columns in DataFrame:", df.columns)
 
-# Try to sort only if 'Timestamp' exists
-if 'Timestamp' in df.columns:
+# Try to sort and plot only if 'Timestamp' and 'Average' exist
+if 'Timestamp' in df.columns and 'Average' in df.columns:
     df = df.sort_values(by='Timestamp')
     st.line_chart(df[['Timestamp', 'Average']].set_index('Timestamp'))
 else:
-    st.write("Timestamp column not found.")
+    st.write("Required columns 'Timestamp' or 'Average' not found in the data.")
 
 st.write('Metrics data:')
 st.write(df)
