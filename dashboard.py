@@ -1,49 +1,29 @@
-# Import necessary libraries and packages
+# Import necessary libraries
 import streamlit as st
-import boto3
 import pandas as pd
 import datetime
 
-# Initialize Boto3 client for CloudWatch
-cloudwatch = boto3.client('cloudwatch', region_name='us-west-2')
+# Mock data to simulate CloudWatch metrics
+mock_data = [
+    {"Timestamp": datetime.datetime.utcnow() - datetime.timedelta(minutes=10), "Average": 0.25},
+    {"Timestamp": datetime.datetime.utcnow() - datetime.timedelta(minutes=5), "Average": 0.30},
+    {"Timestamp": datetime.datetime.utcnow(), "Average": 0.20},
+]
 
-# Function to get CloudWatch metrics
-def get_cloudwatch_metrics(metric_name, namespace, period=300, start_time=None, end_time=None):
-    if start_time is None:
-        start_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-    if end_time is None:
-        end_time = datetime.datetime.utcnow()
-
-    response = cloudwatch.get_metric_statistics(
-        Namespace=namespace,
-        MetricName=metric_name,
-        StartTime=start_time,
-        EndTime=end_time,
-        Period=period,
-        Statistics=['Sum', 'Average']
-    )
-    return response['Datapoints']
+# Convert mock data into a DataFrame
+df = pd.DataFrame(mock_data)
 
 # Streamlit app layout
 st.title('ZenFlow AI Monitoring Dashboard')
 
 st.sidebar.header('Metrics Selection')
-metric_name = st.sidebar.selectbox("Select Metric", ["Invocations", "InvocationErrors"])
-namespace = st.sidebar.text_input("Namespace", value="AWS/SageMaker")
+metric_name = st.sidebar.selectbox("Select Metric", ["Latency", "InvocationErrors", "ErrorCount"])
 
-# Get metrics data
-st.write(f'Displaying {metric_name} metrics:')
-data = get_cloudwatch_metrics(metric_name, namespace)
-df = pd.DataFrame(data)
+# Sort the DataFrame by Timestamp
+df = df.sort_values(by='Timestamp')
 
-# Display the columns in the DataFrame
-st.write("Available columns in the DataFrame:")
-st.write(df.columns)
+# Display the metrics in a line chart
+st.line_chart(df[['Timestamp', 'Average']].set_index('Timestamp'))
 
-# Display the entire DataFrame content
-st.write("DataFrame content:")
+st.write('Metrics data:')
 st.write(df)
-
-# Display the data without assuming any specific columns
-st.write("Displaying raw data in a table:")
-st.table(df)
