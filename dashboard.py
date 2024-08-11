@@ -25,7 +25,8 @@ def get_cloudwatch_metrics(metric_name, namespace, period=300, start_time=None, 
             Period=period,
             Statistics=['Average']
         )
-        return response['Datapoints']
+        st.write("CloudWatch API Response:", response)  # Debug: Print full API response
+        return response.get('Datapoints', [])
     except Exception as e:
         st.error(f"Error fetching CloudWatch metrics: {str(e)}")
         return []
@@ -40,26 +41,34 @@ namespace = st.sidebar.text_input("Namespace", value="AWS/SageMaker")
 st.write(f'Displaying {metric_name} metrics:')
 data = get_cloudwatch_metrics(metric_name, namespace)
 
-# Debug: Print raw data
 st.write("Raw data from CloudWatch:")
 st.write(data)
 
+if not data:
+    st.warning("No data returned from CloudWatch. Please check your metric name, namespace, and AWS credentials.")
+    st.stop()
+
 df = pd.DataFrame(data)
 
-# Debugging: Check the DataFrame
 st.write("DataFrame info:")
 st.write(df.info())
 
 st.write("DataFrame head:")
 st.write(df.head())
 
-# Try to sort and plot only if 'Timestamp' and 'Average' exist and DataFrame is not empty
-if not df.empty and 'Timestamp' in df.columns and 'Average' in df.columns:
-    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-    df = df.sort_values(by='Timestamp')
-    st.line_chart(df.set_index('Timestamp')['Average'])
-else:
-    st.write("No data available or required columns 'Timestamp' or 'Average' not found in the data.")
+# Check for required columns
+required_columns = ['Timestamp', 'Average']
+missing_columns = [col for col in required_columns if col not in df.columns]
+
+if missing_columns:
+    st.error(f"Missing required columns: {', '.join(missing_columns)}")
+    st.write("Available columns:", df.columns)
+    st.stop()
+
+# If we reach here, we have the required columns
+df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+df = df.sort_values(by='Timestamp')
+st.line_chart(df.set_index('Timestamp')['Average'])
 
 st.write('Metrics data:')
 st.write(df)
