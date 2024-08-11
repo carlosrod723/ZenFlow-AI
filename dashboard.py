@@ -39,11 +39,11 @@ df = pd.DataFrame(data)
 # Debugging: Check the DataFrame columns
 st.write("DataFrame Columns:", df.columns)
 
-# Replace 'Timestamp' with the actual column name
+# Attempt to sort by 'Timestamp' or skip if it doesn't exist
 if 'Timestamp' in df.columns:
     df = df.sort_values(by='Timestamp')
-elif 'Timestamp' not in df.columns:
-    st.write("No 'Timestamp' column found. Here's the DataFrame:", df)
+else:
+    st.write("'Timestamp' column not found. Skipping sorting.")
 
 # Display the metrics in a line chart
 st.line_chart(df[['Average']])
