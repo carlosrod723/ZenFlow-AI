@@ -36,12 +36,16 @@ st.write(f'Displaying {metric_name} metrics:')
 data = get_cloudwatch_metrics(metric_name, namespace)
 df = pd.DataFrame(data)
 
-# Check if 'Timestamp' and 'Average' exist in the DataFrame
-if 'Timestamp' in df.columns and 'Average' in df.columns:
+# Check the content of the DataFrame
+st.write("DataFrame content:")
+st.write(df)
+
+# If Timestamp exists, sort by it; otherwise, display raw data
+if 'Timestamp' in df.columns:
     df = df.sort_values(by='Timestamp')
     st.line_chart(df[['Timestamp', 'Average']].set_index('Timestamp'))
 else:
-    st.write("Timestamp and/or Average columns are missing from the data. Displaying raw data.")
+    st.write("Timestamp column is missing from the data. Displaying raw data.")
     st.write(df)
 
 st.write('Metrics data:')
