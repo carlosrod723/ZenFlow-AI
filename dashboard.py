@@ -36,8 +36,8 @@ st.write(f'Displaying {metric_name} metrics:')
 data = get_cloudwatch_metrics(metric_name, namespace)
 df = pd.DataFrame(data)
 
-# Debugging: Check the DataFrame columns
-st.write("DataFrame Columns:", df.columns)
+# Display the DataFrame columns to see what we are working with
+st.write("DataFrame Columns:", df.columns.tolist())
 
 # Attempt to sort by 'Timestamp' or skip if it doesn't exist
 if 'Timestamp' in df.columns:
@@ -45,8 +45,11 @@ if 'Timestamp' in df.columns:
 else:
     st.write("'Timestamp' column not found. Skipping sorting.")
 
-# Display the metrics in a line chart
-st.line_chart(df[['Average']])
+# Display the metrics in a line chart if available
+if 'Average' in df.columns:
+    st.line_chart(df[['Average']])
+else:
+    st.write("'Average' column not found. Unable to display chart.")
 
 st.write('Metrics data:')
 st.write(df)
