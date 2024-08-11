@@ -36,7 +36,11 @@ st.write(f'Displaying {metric_name} metrics:')
 data = get_cloudwatch_metrics(metric_name, namespace)
 df = pd.DataFrame(data)
 
-# Check the content of the DataFrame
+# Display the columns in the DataFrame
+st.write("Available columns in the DataFrame:")
+st.write(df.columns)
+
+# Display the entire DataFrame content
 st.write("DataFrame content:")
 st.write(df)
 
@@ -47,6 +51,3 @@ if 'Timestamp' in df.columns:
 else:
     st.write("Timestamp column is missing from the data. Displaying raw data.")
     st.write(df)
-
-st.write('Metrics data:')
-st.write(df)
