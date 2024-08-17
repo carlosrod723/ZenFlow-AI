@@ -6,10 +6,10 @@ import numpy as np
 import datetime
 
 # Initialize Boto3 client for CloudWatch
-cloudwatch = boto3.client('cloudwatch', region_name='us-west-2')
+cloudwatch= boto3.client('cloudwatch', region_name= 'us-west-2')
 
 # Function to get CloudWatch metrics
-def get_cloudwatch_metrics(metric_name, namespace, period=300, start_time=None, end_time=None):
+def get_cloudwatch_metrics(metric_name, namespace, period= 300, start_time= None, end_time= None):
     """
     Retrieve metrics from AWS CloudWatch.
 
@@ -24,17 +24,17 @@ def get_cloudwatch_metrics(metric_name, namespace, period=300, start_time=None, 
         List[Dict]: List of datapoints containing metric statistics.
     """
     if start_time is None:
-        start_time = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        start_time= datetime.datetime.utcnow() - datetime.timedelta(hours= 1)
     if end_time is None:
-        end_time = datetime.datetime.utcnow()
+        end_time= datetime.datetime.utcnow()
 
-    response = cloudwatch.get_metric_statistics(
-        Namespace=namespace,
-        MetricName=metric_name,
-        StartTime=start_time,
-        EndTime=end_time,
-        Period=period,
-        Statistics=['Average']
+    response= cloudwatch.get_metric_statistics(
+        Namespace= namespace,
+        MetricName= metric_name,
+        StartTime= start_time,
+        EndTime= end_time,
+        Period= period,
+        Statistics= ['Average']
     )
 
     return response['Datapoints']
@@ -43,20 +43,20 @@ def get_cloudwatch_metrics(metric_name, namespace, period=300, start_time=None, 
 st.title('ZenFlow AI Monitoring Dashboard')
 
 st.sidebar.header('Metrics Selection')
-metric_name = st.sidebar.selectbox("Select Metric", ["Latency", "InvocationErrors", "ErrorCount"])
-namespace = st.sidebar.text_input("Namespace", value="AWS/SageMaker")
+metric_name= st.sidebar.selectbox("Select Metric", ["Latency", "InvocationErrors", "ErrorCount"])
+namespace= st.sidebar.text_input("Namespace", value="AWS/SageMaker")
 
 # Get and display metrics data
 st.write(f'Displaying {metric_name} metrics from {namespace}:')
-data = get_cloudwatch_metrics(metric_name, namespace)
+data= get_cloudwatch_metrics(metric_name, namespace)
 
 if data:
     # Convert the data to a DataFrame
-    df = pd.DataFrame(data)
-    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+    df= pd.DataFrame(data)
+    df['Timestamp']= pd.to_datetime(df['Timestamp'])
 
     # Sort the DataFrame by Timestamp
-    df = df.sort_values(by='Timestamp')
+    df= df.sort_values(by='Timestamp')
 
     # Display the metrics in a line chart
     st.line_chart(df[['Timestamp', 'Average']].set_index('Timestamp'))
